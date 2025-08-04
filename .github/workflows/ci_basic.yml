@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Run application check script
-        run: bash /app/check_app.sh
+        run: bash c:\Users\dylan\test-repo\app\check_app.sh
 
       - name: Display index.html content
         run: cat app/index.html
