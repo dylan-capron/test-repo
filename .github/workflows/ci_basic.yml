@@ -16,7 +16,6 @@ jobs:
         env:
           FAKE_API_TOKEN: ${{ secrets.FAKE_API_TOKEN }}
           ENV_TYPE: ${{ secrets.ENV_TYPE }}
-          MY_CUSTOM_ENV: "hello_env"
         run: |
           echo "API TOKEN = $FAKE_API_TOKEN"
           echo "ENV_TYPE = $ENV_TYPE"
