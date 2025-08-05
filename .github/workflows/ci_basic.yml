@@ -11,6 +11,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+        name: Affiche secrets et variables d'environnement
+        env:
+          FAKE_API_TOKEN: ${{ secrets.FAKE_API_TOKEN }}
+          ENV_TYPE: ${{ secrets.ENV_TYPE }}
+          MY_CUSTOM_ENV: "hello_env"
+        run: |
+          echo "API TOKEN = $FAKE_API_TOKEN"
+          echo "ENV_TYPE = $ENV_TYPE"
+          echo "Var custom = $MY_CUSTOM_ENV"
+          echo "OS du runner GitHub : $RUNNER_OS"
       
       - name: Run application check script
         run: bash app/check_app.sh
