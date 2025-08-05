@@ -20,8 +20,6 @@ jobs:
         run: |
           echo "API TOKEN = $FAKE_API_TOKEN"
           echo "ENV_TYPE = $ENV_TYPE"
-          echo "Var custom = $MY_CUSTOM_ENV"
-          echo "OS du runner GitHub : $RUNNER_OS"
       
       - name: Run application check script
         run: bash app/check_app.sh
