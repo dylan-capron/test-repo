@@ -1,0 +1,60 @@
+name: Full CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Affiche secrets et variables d'environnement
+        env:
+          FAKE_API_TOKEN: ${{ secrets.FAKE_API_TOKEN }}
+          ENV_TYPE: ${{ secrets.ENV_TYPE }}
+          MY_CUSTOM_ENV: "hello_env"
+        run: |
+          echo "API TOKEN = $FAKE_API_TOKEN"
+          echo "ENV_TYPE = $ENV_TYPE"
+          echo "Var custom = $MY_CUSTOM_ENV"
+          echo "OS du runner GitHub : $RUNNER_OS"
+
+      - name: Run application check script
+        run: bash app/check_app.sh
+
+      - name: Display index.html content
+        run: cat app/index.html
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Create Ansible inventory file
+        run: |
+          echo "[target]" > inventory.ini
+          echo "${{ secrets.SERVER_IP }}" >> inventory.ini
+          chmod 600 inventory.ini
+
+      - name: Install Ansible
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install ansible
+
+      - name: Run Ansible playbook
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+        run: |
+          ansible-playbook -i inventory.ini ansible/deploy.yml --extra-vars "target_ip=$SERVER_IP target_user=$SERVER_USER"
